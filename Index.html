@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Otimizar xCloud - Melhor Performance</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #00ff00;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 2px solid #00ff00;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 3em;
+            text-shadow: 0 0 20px #00ff00;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #00cc00;
+            font-size: 1.2em;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 0, 0.3);
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #00ff00;
+        }
+
+        .stat-label {
+            color: #00cc00;
+            margin-top: 10px;
+        }
+
+        .controls {
+            background: rgba(0, 255, 0, 0.05);
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 20px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        .status {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 255, 0, 0.1);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .status.active {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .log {
+            background: #000;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+        }
+
+        .log-entry {
+            margin: 5px 0;
+            color: #00cc00;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: #00ff00;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            font-weight: bold;
+            color: #000;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            border-top: 2px solid #00ff00;
+            color: #00cc00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">Bx</div>
+            <h1>OTIMIZAR xCLOUD</h1>
+            <p class="subtitle">Maximize sua performance de gaming</p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="ping">--</div>
+                <div class="stat-label">Ping (ms)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="speed">--</div>
+                <div class="stat-label">Velocidade (Mbps)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="packet-loss">--</div>
+                <div class="stat-label">Perda de Pacotes (%)</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="openApp()">
+                🎮 ABRIR BETTER xCLOUD
+            </button>
+            <button class="btn btn-secondary" onclick="optimizePing()">
+                ⚡ OTIMIZAR PING
+            </button>
+            <button class="btn btn-secondary" onclick="boostConnection()">
+                🚀 TURBINAR CONEXÃO
+            </button>
+            <button class="btn btn-secondary" onclick="clearCache()">
+                🗑️ LIMPAR CACHE DNS
+            </button>
+        </div>
+
+        <div class="status" id="status">
+            Sistema pronto para otimização
+        </div>
+
+        <div class="log" id="log">
+            <div class="log-entry">>>> Sistema inicializado</div>
+            <div class="log-entry">>>> Aguardando comando...</div>
+        </div>
+
+        <footer>
+            <p>© 2024 Otimizar xCloud | Otimize sua experiência de cloud gaming</p>
+        </footer>
+    </div>
+
+    <script src="ping.js"></script>
+    <script src="api.js"></script>
+</body>
+</html>
