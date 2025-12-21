@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Otimizar xCloud - Melhor Performance</title>
+    <title>Otimizar xCloud AI - Sistema Inteligente</title>
     <style>
         * {
             margin: 0;
@@ -17,45 +17,115 @@
             color: #00ff00;
             min-height: 100vh;
             padding: 20px;
+            overflow-x: hidden;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
         }
 
         header {
             text-align: center;
-            padding: 40px 0;
+            padding: 30px 0;
             border-bottom: 2px solid #00ff00;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .ai-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #00ff00, #00cc00);
+            color: #000;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+            animation: pulse 2s infinite;
         }
 
         h1 {
-            font-size: 3em;
+            font-size: 2.5em;
             text-shadow: 0 0 20px #00ff00;
             margin-bottom: 10px;
         }
 
         .subtitle {
             color: #00cc00;
-            font-size: 1.2em;
+            font-size: 1.1em;
+        }
+
+        .ai-status-bar {
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ai-pulse {
+            width: 12px;
+            height: 12px;
+            background: #00ff00;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 0.5;
+                transform: scale(1.2);
+            }
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
         }
 
         .stat-card {
             background: rgba(0, 255, 0, 0.1);
             border: 2px solid #00ff00;
             border-radius: 15px;
-            padding: 25px;
+            padding: 20px;
             text-align: center;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 255, 0, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
 
         .stat-card:hover {
@@ -64,40 +134,67 @@
         }
 
         .stat-value {
-            font-size: 2.5em;
+            font-size: 2em;
             font-weight: bold;
             color: #00ff00;
+            position: relative;
+            z-index: 1;
         }
 
         .stat-label {
             color: #00cc00;
-            margin-top: 10px;
+            margin-top: 8px;
+            font-size: 0.9em;
+        }
+
+        .stat-trend {
+            font-size: 0.8em;
+            margin-top: 5px;
+            color: #00ff00;
         }
 
         .controls {
-            background: rgba(0, 255, 0, 0.05);
-            border: 2px solid #00ff00;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
         .btn {
-            width: 100%;
-            padding: 20px;
-            margin: 10px 0;
+            padding: 18px;
             border: none;
             border-radius: 10px;
-            font-size: 1.2em;
+            font-size: 1.1em;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
             color: #000;
+            grid-column: 1 / -1;
         }
 
         .btn-primary:hover {
@@ -113,84 +210,253 @@
 
         .btn-secondary:hover {
             background: rgba(0, 255, 0, 0.1);
+            transform: translateY(-2px);
         }
 
-        .status {
-            text-align: center;
-            padding: 20px;
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .ai-panel {
+            background: rgba(0, 255, 0, 0.05);
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .ai-panel h3 {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            margin-left: auto;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 255, 0, 0.2);
+            transition: .4s;
+            border-radius: 30px;
+            border: 2px solid #00ff00;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #00ff00;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #00ff00;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+            background-color: #000;
+        }
+
+        .ai-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .ai-action {
             background: rgba(0, 255, 0, 0.1);
-            border-radius: 10px;
-            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #00ff00;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .status.active {
+        .ai-action.active {
+            background: rgba(0, 255, 0, 0.2);
             animation: pulse 2s infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
+        .notification-panel {
+            background: rgba(0, 255, 0, 0.05);
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            max-height: 200px;
+            overflow-y: auto;
         }
+
+        .notification {
+            background: rgba(0, 255, 0, 0.1);
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 4px solid #00ff00;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification.success { border-left-color: #00ff00; }
+        .notification.warning { border-left-color: #ffff00; }
+        .notification.info { border-left-color: #00ccff; }
 
         .log {
             background: #000;
             border: 2px solid #00ff00;
             border-radius: 10px;
-            padding: 20px;
-            margin-top: 30px;
-            max-height: 200px;
+            padding: 15px;
+            max-height: 180px;
             overflow-y: auto;
             font-family: 'Courier New', monospace;
+            font-size: 0.85em;
         }
 
         .log-entry {
-            margin: 5px 0;
+            margin: 3px 0;
             color: #00cc00;
         }
 
+        .log-entry.ai {
+            color: #00ff00;
+            font-weight: bold;
+        }
+
         .logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 15px;
             background: #00ff00;
             border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2em;
+            font-size: 1.8em;
             font-weight: bold;
             color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
         }
 
         footer {
             text-align: center;
-            margin-top: 50px;
+            margin-top: 40px;
             padding: 20px;
             border-top: 2px solid #00ff00;
             color: #00cc00;
+            font-size: 0.9em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 255, 0, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #00cc00);
+            width: 0;
+            transition: width 0.5s ease;
+            animation: progress-glow 2s infinite;
+        }
+
+        @keyframes progress-glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.8); }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #00ff00;
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
+            <div class="ai-badge">🤖 IA ATIVA</div>
             <div class="logo">Bx</div>
-            <h1>OTIMIZAR xCLOUD</h1>
-            <p class="subtitle">Maximize sua performance de gaming</p>
+            <h1>OTIMIZAR xCLOUD AI</h1>
+            <p class="subtitle">Sistema Inteligente de Otimização em Tempo Real</p>
         </header>
+
+        <div class="ai-status-bar">
+            <div class="ai-indicator">
+                <div class="ai-pulse"></div>
+                <span id="ai-status">IA Monitorando...</span>
+            </div>
+            <div>
+                <span id="optimizations-count">0 otimizações aplicadas</span>
+            </div>
+        </div>
 
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-value" id="ping">--</div>
                 <div class="stat-label">Ping (ms)</div>
+                <div class="stat-trend" id="ping-trend">--</div>
             </div>
             <div class="stat-card">
                 <div class="stat-value" id="speed">--</div>
                 <div class="stat-label">Velocidade (Mbps)</div>
+                <div class="stat-trend" id="speed-trend">--</div>
             </div>
             <div class="stat-card">
                 <div class="stat-value" id="packet-loss">--</div>
-                <div class="stat-label">Perda de Pacotes (%)</div>
+                <div class="stat-label">Perda (%)</div>
+                <div class="stat-trend" id="loss-trend">--</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="quality">--</div>
+                <div class="stat-label">Qualidade</div>
+                <div class="stat-trend" id="quality-trend">Analisando...</div>
             </div>
         </div>
 
@@ -198,28 +464,54 @@
             <button class="btn btn-primary" onclick="openApp()">
                 🎮 ABRIR BETTER xCLOUD
             </button>
-            <button class="btn btn-secondary" onclick="optimizePing()">
-                ⚡ OTIMIZAR PING
+            <button class="btn btn-secondary" onclick="manualOptimize()">
+                ⚡ OTIMIZAR AGORA
             </button>
             <button class="btn btn-secondary" onclick="boostConnection()">
-                🚀 TURBINAR CONEXÃO
-            </button>
-            <button class="btn btn-secondary" onclick="clearCache()">
-                🗑️ LIMPAR CACHE DNS
+                🚀 BOOST MÁXIMO
             </button>
         </div>
 
-        <div class="status" id="status">
-            Sistema pronto para otimização
+        <div class="ai-panel">
+            <h3>
+                🤖 Otimização Inteligente por IA
+                <label class="toggle-switch">
+                    <input type="checkbox" id="ai-toggle" checked onchange="toggleAI()">
+                    <span class="slider"></span>
+                </label>
+            </h3>
+            <p style="color: #00cc00; margin-bottom: 15px;">A IA aplica automaticamente otimizações avançadas baseadas em análise em tempo real</p>
+            <div class="ai-actions">
+                <div class="ai-action" id="action-ping">
+                    <span>📡</span> Otimização de Ping
+                </div>
+                <div class="ai-action" id="action-route">
+                    <span>🛣️</span> Roteamento Inteligente
+                </div>
+                <div class="ai-action" id="action-packet">
+                    <span>📦</span> Controle de Pacotes
+                </div>
+                <div class="ai-action" id="action-buffer">
+                    <span>💾</span> Buffer Adaptativo
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="ai-progress"></div>
+            </div>
+        </div>
+
+        <div class="notification-panel" id="notifications">
+            <h3 style="margin-bottom: 10px;">📢 Notificações do Sistema</h3>
         </div>
 
         <div class="log" id="log">
-            <div class="log-entry">>>> Sistema inicializado</div>
-            <div class="log-entry">>>> Aguardando comando...</div>
+            <div class="log-entry ai">>>> SISTEMA IA XCLOUD INICIALIZADO</div>
+            <div class="log-entry">>>> Todos os módulos carregados</div>
         </div>
 
         <footer>
-            <p>© 2024 Otimizar xCloud | Otimize sua experiência de cloud gaming</p>
+            <p>© 2024 Otimizar xCloud AI | Sistema Inteligente de Otimização</p>
+            <p style="margin-top: 5px; font-size: 0.85em;">Powered by Advanced AI Technology</p>
         </footer>
     </div>
 
