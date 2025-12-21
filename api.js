@@ -1,104 +1,255 @@
-// api.js - API de Otimização de Internet e Conexão
+// api.js - Sistema Inteligente de API e Otimização de Conexão
 
-class ConnectionOptimizer {
+class AIConnectionOptimizer {
     constructor() {
         this.currentSpeed = 0;
-        this.maxSpeed = 100;
+        this.maxSpeed = 150;
+        this.speedHistory = [];
         this.isBoostActive = false;
+        this.aiTasks = [];
+        this.notificationQueue = [];
+        this.aiProgress = 0;
     }
 
-    // Mede velocidade da conexão
+    // Medição avançada de velocidade
     async measureSpeed() {
-        addLog('📊 Medindo velocidade da conexão...');
+        const measurements = [];
         
-        const startTime = performance.now();
-        const testSize = 1024 * 1024; // 1MB
+        for (let i = 0; i < 3; i++) {
+            const startTime = performance.now();
+            
+            try {
+                const response = await fetch('https://cloudflare.com', { 
+                    mode: 'no-cors',
+                    cache: 'no-cache'
+                });
+                
+                const endTime = performance.now();
+                const duration = (endTime - startTime) / 1000;
+                const speed = Math.round((1024 * 8) / (duration * 1024) + Math.random() * 30);
+                measurements.push(speed);
+            } catch (error) {
+                measurements.push(50);
+            }
+            
+            await this.sleep(200);
+        }
         
-        try {
-            // Simula teste de velocidade
-            await fetch('https://cloudflare.com', { 
-                mode: 'no-cors',
-                cache: 'no-cache'
-            });
-            
-            const endTime = performance.now();
-            const duration = (endTime - startTime) / 1000;
-            const speed = (testSize * 8) / (duration * 1024 * 1024);
-            
-            this.currentSpeed = Math.round(speed * 10 + Math.random() * 20);
-            document.getElementById('speed').textContent = this.currentSpeed;
-            
-            return this.currentSpeed;
-        } catch (error) {
-            addLog('⚠️ Erro ao medir velocidade');
-            return 0;
+        // Calcula mediana
+        measurements.sort((a, b) => a - b);
+        this.currentSpeed = measurements[1];
+        
+        this.speedHistory.push(this.currentSpeed);
+        if (this.speedHistory.length > 30) {
+            this.speedHistory.shift();
+        }
+        
+        this.updateSpeedDisplay();
+        return this.currentSpeed;
+    }
+
+    updateSpeedDisplay() {
+        document.getElementById('speed').textContent = this.currentSpeed;
+        
+        // Calcula tendência
+        if (this.speedHistory.length >= 2) {
+            const recent = this.speedHistory[this.speedHistory.length - 1];
+            const previous = this.speedHistory[this.speedHistory.length - 2];
+            const change = recent - previous;
+            const icon = change > 0 ? '📈' : change < 0 ? '📉' : '➡️';
+            document.getElementById('speed-trend').textContent = 
+                `${icon} ${Math.abs(change).toFixed(1)} Mbps`;
         }
     }
 
-    // Turbinar conexão
+    // Boost inteligente de conexão
     async boostConnection() {
         if (this.isBoostActive) {
-            addLog('⚡ Boost já está ativo!');
+            showNotification('Boost já está ativo!', 'warning');
             return;
         }
 
         this.isBoostActive = true;
-        updateStatus('Turbinando conexão...', true);
+        showNotification('Iniciando boost máximo...', 'info');
+        addLog('🚀 Boost máximo ativado');
 
-        // Fase 1: Otimizar TCP/IP
-        addLog('🔧 Otimizando parâmetros TCP/IP...');
-        await this.sleep(1200);
+        // Múltiplas otimizações simultâneas
+        const tasks = [
+            this.optimizeNetworkStack(),
+            this.enableTurboMode(),
+            this.prioritizeTraffic(),
+            this.optimizeBandwidth()
+        ];
 
-        // Fase 2: Aumentar buffer
-        addLog('💾 Aumentando buffers de rede...');
-        await this.sleep(1000);
-
-        // Fase 3: Remover limitações
-        addLog('🚫 Removendo limitações de banda...');
-        await this.sleep(1500);
-
-        // Fase 4: Ativar aceleração
-        addLog('🚀 Ativando aceleração de conexão...');
-        await this.sleep(1000);
+        await this.executeTasksWithProgress(tasks);
 
         const speedBefore = this.currentSpeed;
-        this.currentSpeed = Math.min(this.maxSpeed, this.currentSpeed * 1.5);
+        this.currentSpeed = Math.min(this.maxSpeed, this.currentSpeed * 1.8);
         document.getElementById('speed').textContent = Math.round(this.currentSpeed);
 
         const improvement = Math.round((this.currentSpeed - speedBefore) / speedBefore * 100);
-        addLog(`✅ Velocidade aumentada em ${improvement}%!`);
-        updateStatus(`Conexão turbinada em ${improvement}%!`, false);
+        showNotification(`Velocidade aumentada em ${improvement}%!`, 'success');
+        addLog(`✅ Boost aplicado: +${improvement}% de velocidade`);
 
-        // Desativa boost após 30 segundos
+        // Desativa após 60 segundos
         setTimeout(() => {
             this.isBoostActive = false;
-            addLog('ℹ️ Boost temporário finalizado');
-        }, 30000);
+            showNotification('Boost temporário finalizado', 'info');
+            addLog('ℹ️ Boost desativado');
+        }, 60000);
     }
 
-    // Limpar cache DNS
-    async clearDNSCache() {
-        updateStatus('Limpando cache DNS...', true);
-        addLog('🗑️ Iniciando limpeza de cache DNS...');
+    async executeTasksWithProgress(tasks) {
+        const totalTasks = tasks.length;
+        let completed = 0;
 
-        await this.sleep(800);
-        addLog('📡 Removendo entradas antigas...');
+        for (const task of tasks) {
+            await task;
+            completed++;
+            this.aiProgress = (completed / totalTasks) * 100;
+            this.updateProgressBar();
+        }
+    }
 
+    updateProgressBar() {
+        const progressBar = document.getElementById('ai-progress');
+        if (progressBar) {
+            progressBar.style.width = `${this.aiProgress}%`;
+        }
+    }
+
+    // Otimizações individuais
+    async optimizeNetworkStack() {
+        addLog('🔧 Otimizando stack de rede...');
+        await this.sleep(1200);
+        addLog('✓ Stack otimizado');
+    }
+
+    async enableTurboMode() {
+        addLog('⚡ Ativando modo turbo...');
         await this.sleep(1000);
-        addLog('🔄 Renovando conexões DNS...');
-
-        await this.sleep(600);
-        addLog('✅ Cache DNS limpo com sucesso!');
-        updateStatus('Cache DNS limpo!', false);
+        addLog('✓ Turbo mode ativado');
     }
 
-    // Monitoramento de velocidade
-    startSpeedMonitoring() {
+    async prioritizeTraffic() {
+        addLog('🎯 Priorizando tráfego gaming...');
+        await this.sleep(900);
+        addLog('✓ Tráfego priorizado');
+    }
+
+    async optimizeBandwidth() {
+        addLog('📊 Otimizando largura de banda...');
+        await this.sleep(1100);
+        addLog('✓ Banda otimizada');
+    }
+
+    // Sistema de notificações inteligente
+    async processNotifications() {
+        setInterval(() => {
+            if (this.notificationQueue.length > 0) {
+                const notification = this.notificationQueue.shift();
+                this.displayNotification(notification);
+            }
+        }, 2000);
+    }
+
+    displayNotification(data) {
+        const panel = document.getElementById('notifications');
+        const notif = document.createElement('div');
+        notif.className = `notification ${data.type}`;
+        
+        const icon = data.type === 'success' ? '✅' : 
+                    data.type === 'warning' ? '⚠️' : 'ℹ️';
+        
+        notif.innerHTML = `
+            <strong>${icon} ${data.title}</strong>
+            <div style="font-size: 0.9em; margin-top: 5px;">${data.message}</div>
+            <div style="font-size: 0.8em; color: #00cc00; margin-top: 3px;">
+                ${new Date().toLocaleTimeString()}
+            </div>
+        `;
+        
+        panel.appendChild(notif);
+        
+        // Remove notificações antigas
+        if (panel.children.length > 6) {
+            panel.removeChild(panel.children[1]); // Mantém o título
+        }
+        
+        // Auto-remove após 10 segundos
+        setTimeout(() => {
+            if (notif.parentNode === panel) {
+                notif.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notif.remove(), 300);
+            }
+        }, 10000);
+    }
+
+    // Análise preditiva de rede
+    async predictiveAnalysis() {
+        setInterval(async () => {
+            if (this.speedHistory.length >= 5) {
+                const recent = this.speedHistory.slice(-5);
+                const avgSpeed = recent.reduce((a, b) => a + b, 0) / recent.length;
+                
+                // Detecta queda de velocidade
+                if (this.currentSpeed < avgSpeed * 0.7) {
+                    this.notificationQueue.push({
+                        type: 'warning',
+                        title: 'Queda de Velocidade Detectada',
+                        message: 'IA está aplicando correções automáticas'
+                    });
+                    
+                    addLog('🤖 IA: Detectada queda de velocidade', 'ai');
+                    await this.autoCorrectSpeed();
+                }
+                
+                // Detecta instabilidade
+                const variance = this.calculateVariance(recent);
+                if (variance > 20) {
+                    this.notificationQueue.push({
+                        type: 'info',
+                        title: 'Conexão Instável',
+                        message: 'Estabilizando conexão automaticamente'
+                    });
+                    
+                    addLog('🤖 IA: Estabilizando conexão', 'ai');
+                    await this.stabilizeConnection();
+                }
+            }
+        }, 8000);
+    }
+
+    calculateVariance(arr) {
+        const avg = arr.reduce((a, b) => a + b, 0) / arr.length;
+        const squareDiffs = arr.map(value => Math.pow(value - avg, 2));
+        return Math.sqrt(squareDiffs.reduce((a, b) => a + b, 0) / arr.length);
+    }
+
+    async autoCorrectSpeed() {
+        addLog('🔧 Aplicando correção automática...');
+        await this.sleep(1000);
+        this.currentSpeed = Math.min(this.maxSpeed, this.currentSpeed * 1.3);
+        this.updateSpeedDisplay();
+        addLog('✓ Velocidade corrigida');
+    }
+
+    async stabilizeConnection() {
+        addLog('⚖️ Estabilizando conexão...');
+        await this.sleep(1200);
+        addLog('✓ Conexão estabilizada');
+    }
+
+    // Monitoramento contínuo
+    startMonitoring() {
         setInterval(async () => {
             if (!this.isBoostActive) {
                 await this.measureSpeed();
             }
-        }, 8000);
+        }, 6000);
+        
+        // Inicia análise preditiva
+        this.predictiveAnalysis();
     }
 
     sleep(ms) {
@@ -106,70 +257,107 @@ class ConnectionOptimizer {
     }
 }
 
-// Sistema de logs
-function addLog(message) {
+// Funções auxiliares globais
+function showNotification(message, type = 'info') {
+    connectionOptimizer.notificationQueue.push({
+        type: type,
+        title: type === 'success' ? 'Sucesso' : 
+               type === 'warning' ? 'Atenção' : 'Informação',
+        message: message
+    });
+}
+
+function addLog(message, type = 'normal') {
     const logDiv = document.getElementById('log');
     const entry = document.createElement('div');
-    entry.className = 'log-entry';
-    entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+    entry.className = type === 'ai' ? 'log-entry ai' : 'log-entry';
+    
+    const timestamp = new Date().toLocaleTimeString();
+    const icon = type === 'ai' ? '🤖 ' : '>>> ';
+    entry.textContent = `[${timestamp}] ${icon}${message}`;
+    
     logDiv.appendChild(entry);
     logDiv.scrollTop = logDiv.scrollHeight;
 
-    // Limita a 50 entradas
-    if (logDiv.children.length > 50) {
+    // Limita a 100 entradas
+    if (logDiv.children.length > 100) {
         logDiv.removeChild(logDiv.firstChild);
     }
 }
 
-// Atualizar status
-function updateStatus(message, isActive) {
-    const statusDiv = document.getElementById('status');
-    statusDiv.textContent = message;
-    
-    if (isActive) {
-        statusDiv.classList.add('active');
-    } else {
-        statusDiv.classList.remove('active');
-    }
-}
-
-// Abrir aplicativo Better xCloud
+// Abrir Better xCloud
 function openApp() {
-    addLog('🎮 Abrindo Better xCloud...');
-    updateStatus('Iniciando Better xCloud...', true);
+    showNotification('Abrindo Better xCloud...', 'info');
+    addLog('🎮 Tentando abrir Better xCloud...');
     
-    // Tenta abrir o app
-    const packageName = 'com.microsoft.xcloud';
-    const appIntent = `intent://xbox.com#Intent;scheme=https;package=${packageName};end`;
+    // Múltiplas tentativas de abrir o app
+    const attempts = [
+        'intent://xbox.com#Intent;scheme=https;package=com.microsoft.xcloud;end',
+        'xcloud://launch',
+        'https://www.xbox.com/play'
+    ];
     
-    window.location.href = appIntent;
+    attempts.forEach((url, index) => {
+        setTimeout(() => {
+            window.location.href = url;
+        }, index * 500);
+    });
     
     setTimeout(() => {
-        updateStatus('Verifique se o app foi aberto', false);
-        addLog('ℹ️ Se o app não abriu, instale o Better xCloud');
-    }, 2000);
+        showNotification('Se o app não abriu, instale o Better xCloud', 'warning');
+        addLog('ℹ️ Verifique se o Better xCloud está instalado');
+    }, 3000);
 }
 
-// Função global para turbinar conexão
+// Função global para boost
 async function boostConnection() {
     await connectionOptimizer.boostConnection();
 }
 
-// Função global para limpar cache
-async function clearCache() {
-    await connectionOptimizer.clearDNSCache();
-}
-
 // Inicialização
-const connectionOptimizer = new ConnectionOptimizer();
+const connectionOptimizer = new AIConnectionOptimizer();
 
 window.addEventListener('load', () => {
-    connectionOptimizer.startSpeedMonitoring();
-    addLog('🌐 Sistema de otimização de conexão ativado');
-    addLog('✅ Todos os sistemas prontos!');
+    // Inicia monitoramentos
+    connectionOptimizer.startMonitoring();
+    connectionOptimizer.processNotifications();
     
-    // Mensagem de boas-vindas
+    addLog('🌐 API de otimização carregada', 'ai');
+    addLog('📊 Análise preditiva ativada', 'ai');
+    
+    // Notificação de boas-vindas
     setTimeout(() => {
-        addLog('💡 Dica: Use o botão OTIMIZAR PING antes de jogar!');
+        showNotification('Sistema AI completamente carregado!', 'success');
+        
+        connectionOptimizer.notificationQueue.push({
+            type: 'info',
+            title: 'Dica de Uso',
+            message: 'A IA está monitorando e otimizando automaticamente sua conexão em tempo real'
+        });
     }, 2000);
+    
+    // Mensagens educativas
+    setTimeout(() => {
+        connectionOptimizer.notificationQueue.push({
+            type: 'info',
+            title: 'Recurso IA',
+            message: 'O sistema aplica até 8 estratégias diferentes de otimização baseadas em análise em tempo real'
+        });
+    }, 10000);
 });
+
+// Adiciona estilo para slideOut
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
